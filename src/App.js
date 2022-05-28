@@ -83,7 +83,7 @@ function App() {
         <div className="">
           <div className="bg-slate-900 text-center p-5 rounded-t-xl">
             <button
-              className="bg-cyan-600 p-2 pl-8 pr-8 mt-5 rounded-lg"
+              className="bg-cyan-800 p-2 pl-8 pr-8 mt-5 rounded-lg"
               onClick={() => openModel()}
             >
               <p className="text-2xl font-bold text-white text-center ">
