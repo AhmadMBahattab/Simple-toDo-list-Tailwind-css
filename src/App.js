@@ -1,56 +1,49 @@
 import "./App.css";
 import TaskForm from "./components/TaskForm";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.min.css";
 import "react-toastify/dist/ReactToastify.css";
 import { MdDeleteForever } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
-import { AiOutlineArrowDown } from "react-icons/ai";
+
+import axios from "axios";
+
+const homeApi = "http://localhost:5500";
 function App() {
   const [modalOn, setModalOn] = useState(false);
   const [todoTask, settodoTask] = useState(false);
 
   const [toDoArray, settoDoArray] = useState([
-    {
-      id: 1,
-      taskName: "Workout fullbody",
-      taskDate: "2022-06-22",
-      taskDetails: "",
-      taskOpen: false,
-    },
-    {
-      id: 2,
-      taskName: "Study",
-      taskDate: "2022-06-29",
-      taskDetails:
-        "1 hour of English study then 1 hour of proplem solving with paython",
-      taskOpen: false,
-    },
-    {
-      id: 3,
-      taskName: "shopping",
-      taskDate: "2022-06-30",
-      taskDetails: "buy new cloths for the gym",
-      taskOpen: false,
-    },
+    // {
+    //   id: 3,
+    //   taskName: "shopping",
+    //   taskDate: "2022-06-30",
+    //   taskDetails: "buy new cloths for the gym",
+    //   taskOpen: false,
+    // },
   ]);
+
+  useEffect(() => {
+    async function getData() {
+      const { data: tasks } = await axios.get("http://localhost:5500");
+      console.log(tasks);
+      settoDoArray(tasks);
+    }
+    getData().catch((err) => console.log(err));
+  }, []);
 
   const openModel = () => {
     setModalOn(true);
   };
 
-  const closeModel = () => {
-    setModalOn(false);
-  };
-  const addTask = (name, date, details) => {
+  const addTask = async (name, date, details) => {
     let tasksArary = [...toDoArray];
     if (name === "" || name == null) {
       return toast.error("Must add task name");
     }
     let newTask = {
-      id: Date.now(),
       taskName: name,
       taskDate: date,
       taskDetails: details,
@@ -59,27 +52,29 @@ function App() {
     tasksArary.push(newTask);
     toast.success("Task added");
 
+    const find = await axios.post("http://localhost:5500", newTask);
+
     settoDoArray(tasksArary);
     setModalOn(false);
     console.log("Task added ", newTask);
   };
 
-  const deleteTask = (task) => {
+  const deleteTask = async (task) => {
     let tasksArr = [...toDoArray];
-
+    console.log("Delete sucsses ", task);
     tasksArr = tasksArr.filter((todo) => {
-      return todo.id !== task.id;
+      return todo._id !== task._id;
     });
     settoDoArray(tasksArr);
+    const find = await axios.put("http://localhost:5500", task);
     toast.success("Task deleted ");
-    console.log("Delete sucsses ", task);
   };
 
   const editTask = (id) => {};
 
   return (
     <>
-      <div className="p-32 pl-96 pr-96 ">
+      <div className="p-32 pl-32 pr-32 ">
         <div className="">
           <div className="bg-slate-900 text-center p-5 rounded-t-xl">
             <button
